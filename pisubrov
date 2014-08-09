@@ -10,7 +10,7 @@ import picamera
 import fcntl
 import struct
 import datetime
-import Adafruit_BMP.BMP085 as BMP085
+from Adafruit_BMP085 import BMP085
 
 bport = 4000
 cport = 4001
@@ -20,7 +20,7 @@ vport = 4003
 bsize = 1024
 
 i2clock = threading.Lock()
-bsen = BMP085.BMP085()
+bsen = BMP085(0x77)
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -70,7 +70,7 @@ def tstreamer():
     while True:
       try:
         i2clock.acquire()
-        data = 't={0:0.2f}*C'.format(sensor.read_temperature()) + '&p={0:0.2f}Pa'.format(sensor.read_pressure())
+        data = "t=%.2fC" % temp + "&p=%.2f hPa" % (pressure / 100.0)
         i2clock.release()
         t.sendall(datetime.datetime.now().time().isoformat() + ': ' + data)
         time.sleep(0.1)
