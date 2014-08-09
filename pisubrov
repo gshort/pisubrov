@@ -11,6 +11,7 @@ import fcntl
 import struct
 import datetime
 import Adafruit_BMP.BMP085 as BMP085
+from Adafruit_PWM_Servo_Driver import PWM
 
 bport = 4000
 cport = 4001
@@ -20,7 +21,22 @@ vport = 4003
 bsize = 1024
 
 i2clock = threading.Lock()
-bsen = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES) 
+bsen = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
+pwm = PWM(0x40, debug=True)
+
+servoMin = 200  # Min pulse length out of 4096
+servoMax = 650  # Max pulse length out of 4096
+pwm.setPWMFreq(60)
+
+def setServoPulse(channel, pulse):
+  pulseLength = 1000000                   # 1,000,000 us per second
+  pulseLength /= 60                       # 60 Hz
+  print "%d us per period" % pulseLength
+  pulseLength /= 4096                     # 12 bits of resolution
+  print "%d us per bit" % pulseLength
+  pulse *= 1000
+  pulse /= pulseLength
+  pwm.setPWM(channel, 0, pulse)
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -52,7 +68,10 @@ def cstreamer():
         sys.stdout.write('c: ' + data + '\n')
         data = c.recv(bsize)
         i2clock.acquire()
-        # update servos
+        pwm.setPWM(0, 0, servoMin)
+        time.sleep(1)
+        pwm.setPWM(0, 0, servoMax)
+        time.sleep(1)
         i2clock.release()
       except Exception:
         i2clock.release()
