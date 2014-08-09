@@ -1,0 +1,115 @@
+#!/usr/bin/python
+
+import socket
+import thread
+import threading
+import time
+import sys
+import io
+import picamera
+import fcntl
+import struct
+import datetime
+import Adafruit_BMP.BMP085 as BMP085
+
+bport = 4000
+cport = 4001
+tport = 4002
+vport = 4003
+
+bsize = 1024
+
+i2clock = threading.Lock()
+bsen = BMP085.BMP085()
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+def broadcast():
+  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+  while True:
+#    sys.stdout.write('b: ROV@' + get_ip_address('eth0') + '\n')
+    s.sendto('ROV@' + get_ip_address('eth0'), ('<broadcast>', bport))
+    time.sleep(1)
+
+def cstreamer():
+  s = socket.socket()
+  s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+  s.bind(('', cport))
+  s.listen(0)
+  while True:
+    c, addr = s.accept()
+    sys.stdout.write('c: connected\n')
+    data = c.recv(bsize)
+    while data:
+      try:
+        sys.stdout.write('c: ' + data + '\n')
+        data = c.recv(bsize)
+        i2clock.acquire()
+        # update servos
+        i2clock.release()
+      except Exception:
+        i2clock.release()
+        sys.stdout.write('c: disconnected\n')
+        break
+
+def tstreamer():
+  s = socket.socket()
+  s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+  s.bind(('', tport))
+  s.listen(0)
+  while True:
+    t, addr = s.accept()
+    sys.stdout.write('t: connected\n')
+    while True:
+      try:
+        i2clock.acquire()
+        data = 't={0:0.2f}*C'.format(sensor.read_temperature()) + '&p={0:0.2f}Pa'.format(sensor.read_pressure())
+        i2clock.release()
+        t.sendall(datetime.datetime.now().time().isoformat() + ': ' + data)
+        time.sleep(0.1)
+      except Exception:
+        sys.stdout.write('t: disconnected\n')
+        break
+
+def vstreamer():
+  with picamera.PiCamera() as camera:
+    camera.resolution = (640, 480)
+    camera.framerate = 30
+    s = socket.socket()
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind(('', vport))
+    s.listen(0)
+    while True:
+      v = s.accept()[0].makefile('wb')
+      sys.stdout.write('v: connected\n')
+      try:
+        camera.start_recording(v, format='h264')
+        while True:
+          camera.wait_recording(5)
+      except Exception:
+        try:
+          camera.stop_recording()
+        except Exception:
+          sys.stdout.write('v: camera stopped\n')
+        try:
+          v.close()
+        except Exception:
+          sys.stdout.write('v: disconnected\n')
+
+try:
+  bthread = thread.start_new_thread(broadcast, ())
+  cthread = thread.start_new_thread(cstreamer, ())
+  tthread = thread.start_new_thread(tstreamer, ())
+  vthread = thread.start_new_thread(vstreamer, ())
+  while True:
+    time.sleep(1)
+except KeyboardInterrupt:
+  print ''
+  exit

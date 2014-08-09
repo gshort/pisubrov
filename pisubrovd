@@ -1,0 +1,36 @@
+#!/bin/bash
+# /etc/init.d/pisubrov
+
+### BEGIN INIT INFO
+# Provides:          pisubrov
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: control for pisubrovd server
+# Description:       This service is used to manage the pisubrovd
+### END INIT INFO
+
+
+case "$1" in 
+    start)
+        echo "Starting pisubrovd"
+        /home/pi/pisubrov/pisubrov &
+        ;;
+    stop)
+        echo "Stopping pisubrovd"
+        killall pisubrov
+        ;;
+    restart)
+        echo "Stopping pisubrovd"
+        killall pisubrov
+        echo "Starting pisubrovd"
+        /home/pi/pisubrov/pisubrov &
+        ;;
+    *)
+        echo "Usage: /etc/init.d/pisubrovd start|stop|restart"
+        exit 1
+        ;;
+esac
+
+exit 0
