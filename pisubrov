@@ -20,7 +20,7 @@ vport = 4003
 bsize = 1024
 
 i2clock = threading.Lock()
-bsen = BMP085.BMP085() 
+bsen = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES) 
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
