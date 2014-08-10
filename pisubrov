@@ -79,7 +79,7 @@ def cstreamer():
         i2clock.acquire()
         for command in commands:
           parts = split(command, '=')
-          pwm.setPWM(int(parts[0], 1, int(parts[1]))
+          pwm.setPWM(int(parts[0]), 1, int(parts[1]))
         i2clock.release()
       except Exception:
         i2clock.release()
