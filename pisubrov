@@ -71,7 +71,7 @@ def cstreamer():
         sys.stdout.write('c: ' + data + '\n')
         data = c.recv(bsize)
         i2clock.acquire()
-        pwm.setPWM(0, 1, data)
+        pwm.setPWM(0, 1, int(data))
         i2clock.release()
       except Exception:
         i2clock.release()
