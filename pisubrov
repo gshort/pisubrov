@@ -27,8 +27,8 @@ i2clock = threading.Lock()
 bsen = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
 pwm = PWM(0x40, debug=True)
 
-servoMin = 200  # Min pulse length out of 4096
-servoMax = 650  # Max pulse length out of 4096
+servoMin = 180  # Min pulse length out of 4096
+servoMax = 680  # Max pulse length out of 4096
 pwm.setPWMFreq(60)
 
 def setServoPulse(channel, pulse):
