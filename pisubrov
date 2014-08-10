@@ -1,8 +1,5 @@
 #!/usr/bin/python
 
-import sys
-sys.path.append('./') # probably not a great idea but it works for now. Needed for the Adafruit PWM Servo Driver lib
-
 import socket
 import thread
 import threading
@@ -14,6 +11,8 @@ import fcntl
 import struct
 import datetime
 import Adafruit_BMP.BMP085 as BMP085
+import sys
+sys.path.append('./') # probably not a great idea but it works for now. Needed for the Adafruit PWM Servo Driver lib
 from Adafruit_PWM_Servo_Driver import PWM
 
 bport = 4000
@@ -35,9 +34,7 @@ pwm.setPWMFreq(60)
 def setServoPulse(channel, pulse):
   pulseLength = 1000000                   # 1,000,000 us per second
   pulseLength /= 60                       # 60 Hz
-  print "%d us per period" % pulseLength
   pulseLength /= 4096                     # 12 bits of resolution
-  print "%d us per bit" % pulseLength
   pulse *= 1000
   pulse /= pulseLength
   pwm.setPWM(channel, 0, pulse)
@@ -74,13 +71,14 @@ def cstreamer():
     while data:
       try:
         sys.stdout.write('c: ' + data + '\n')
-        data = c.recv(bsize)
-        commands = split(data, '&')
+        commands = data.split('&')
         i2clock.acquire()
         for command in commands:
-          parts = split(command, '=')
+          parts = command.split('=')
+          sys.stdout.write('Setting channel ' + parts[0] + ' to ' + parts[1])
           pwm.setPWM(int(parts[0]), 1, int(parts[1]))
         i2clock.release()
+        data = c.recv(bsize)
       except Exception:
         i2clock.release()
         sys.stdout.write('c: disconnected\n')
