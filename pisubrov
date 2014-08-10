@@ -27,8 +27,9 @@ i2clock = threading.Lock()
 bsen = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
 pwm = PWM(0x40, debug=True)
 
-servoMin = 180  # Min pulse length out of 4096
-servoMax = 680  # Max pulse length out of 4096
+servoMin = 230  # Min pulse length out of 4096
+servoMid = 445  # For centering cam
+servoMax = 710  # Max pulse length out of 4096
 pwm.setPWMFreq(60)
 
 def setServoPulse(channel, pulse):
@@ -58,6 +59,10 @@ def broadcast():
     time.sleep(1)
 
 def cstreamer():
+  i2clock.acquire()
+  pwm.setPWM(0, 1, servoMid)
+  pwm.setPWM(1, 1, servoMid)
+  i2clock.release()
   s = socket.socket()
   s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
   s.bind(('', cport))
