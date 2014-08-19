@@ -108,7 +108,7 @@ def tstreamer():
           ','.join(map(str, accelerometer)),
           ','.join(map(str, magnetometer)))
         t.sendall(datetime.datetime.now().time().isoformat() + ':' + data)
-        time.sleep(0.1)
+        time.sleep(0.03)
       except:
         sys.stdout.write('t: disconnected\n')
         break
