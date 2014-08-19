@@ -104,8 +104,9 @@ def tstreamer():
         i2clock.release()
         t.sendall(datetime.datetime.now().time().isoformat() + ': ' + data)
         time.sleep(0.1)
-      except Exception:
+      except :
         sys.stdout.write('t: disconnected\n')
+        sys.stdout.write(sys.exc_info()[0])
         break
 
 def vstreamer():
