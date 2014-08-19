@@ -14,6 +14,7 @@ import Adafruit_BMP.BMP085 as BMP085
 import sys
 sys.path.append('./') # probably not a great idea but it works for now. Needed for the Adafruit PWM Servo Driver lib
 from Adafruit_PWM_Servo_Driver import PWM
+from Adafruit_LSM303 import LSM303
 
 bport = 4000
 cport = 4001
