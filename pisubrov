@@ -24,7 +24,7 @@ vport = 4003
 bsize = 1024
 
 i2clock = threading.Lock()
-bsen = BMP085.BMP085(mode=BMP085.BMP085_ULTRAHIGHRES)
+bsen = BMP085.BMP085()
 pwm = PWM(0x40, debug=True)
 
 servoMin = 230  # Min pulse length out of 4096
