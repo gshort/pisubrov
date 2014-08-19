@@ -94,7 +94,7 @@ class LSM303(Adafruit_I2C):
 
     # Read the magnetometer
     list = self.mag.readList(self.LSM303_REGISTER_MAG_OUT_X_H_M, 6)
-    res.append((self.mag16(list, 0), self.mag16(list, 2), self.mag16(list, 4), 0.0 )) # ToDo: Calculate orientation
+    res.append((self.mag16(list, 0), self.mag16(list, 2), self.mag16(list, 4) ))
 
     return res
 
@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
   lsm = LSM303()
 
-  print '[(Accelerometer X, Y, Z), (Magnetometer X, Y, Z, orientation)]'
+  print '[(Accelerometer X, Y, Z), (Magnetometer X, Y, Z)]'
   while True:
     print lsm.read()
     sleep(1) # Output is fun to watch if this is commented out

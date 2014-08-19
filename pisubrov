@@ -25,7 +25,8 @@ bsize = 1024
 
 i2clock = threading.Lock()
 bsen = BMP085.BMP085()
-pwm = PWM(0x40, debug=True)
+pwm = PWM(0x40)
+lsm = LSM303
 
 servoMin = 230  # Min pulse length out of 4096
 servoMid = 445  # For centering cam
