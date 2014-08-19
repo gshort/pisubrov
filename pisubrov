@@ -101,7 +101,7 @@ def tstreamer():
         pres = bsen.read_pressure()
         accelmag = lsm.read()
         i2clock.release()
-        data = 't={0:0.2f}&p={1:0.2f}&a={2:d},{3:d},{4:d}&m={5:d},{6:d},{7:d}'.format(
+        data = 't={0:0.2f}&p={1:0.2f}&a={2},{3},{4}&m={5},{6},{7}'.format(
           temp,
           pres,
           accelmag[0], accelmag[1], accelmag[2],
