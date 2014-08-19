@@ -25,7 +25,7 @@ bsize = 1024
 
 i2clock = threading.Lock()
 bsen = BMP085.BMP085()
-lsm = LSM303
+lsm = LSM303()
 pwm = PWM(0x40)
 
 servoMin = 230  # Min pulse length out of 4096
