@@ -106,7 +106,7 @@ def tstreamer():
           temperature,
           pressure,
           ','.join(map(str, accelerometer))),
-          ','.join(map(str, magnetometer))),
+          ','.join(map(str, magnetometer)))
         t.sendall(datetime.datetime.now().time().isoformat() + ': ' + data)
         time.sleep(0.1)
       except:
