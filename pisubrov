@@ -97,9 +97,10 @@ def tstreamer():
     while True:
       try:
         i2clock.acquire()
-        data = 't={0:0.2f}'.format(bsen.read_temperature())                                   # temperature
-          + '&p={0:0.2f}'.format(bsen.read_pressure())                                        # pressure
-          + '&a={0:0.2f},{0:0.2f},{0:0.2f}&m={0:0.2f},{0:0.2f},{0:0.2f}'.format(lsm.read())   # accelerometer, magnetometer
+        data = 't={0:0.2f}&p={0:0.2f}&a={0:0.2f},{0:0.2f},{0:0.2f}&m={0:0.2f},{0:0.2f},{0:0.2f}'.format(
+          bsen.read_temperature(),
+          bsen.read_pressure(),
+          lsm.read())
         i2clock.release()
         t.sendall(datetime.datetime.now().time().isoformat() + ': ' + data)
         time.sleep(0.1)
