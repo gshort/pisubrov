@@ -85,7 +85,17 @@ class LSM303(Adafruit_I2C):
     n = (list[idx] << 8) | list[idx+1]   # High, low bytes
     return n if n < 32768 else n - 65536 # 2's complement signed
 
-
+  def read_accelometer(self):
+    # Read the accelerometer
+    list = self.accel.readList(
+      self.LSM303_REGISTER_ACCEL_OUT_X_L_A | 0x80, 6)
+    return [( self.accel12(list, 0), self.accel12(list, 2), self.accel12(list, 4) )]
+  
+  def read_magnetometer(self):
+    # Read the magnetometer
+    list = self.mag.readList(self.LSM303_REGISTER_MAG_OUT_X_H_M, 6)
+    return [(self.mag16(list, 0), self.mag16(list, 2), self.mag16(list, 4) )]
+    
   def read(self):
     # Read the accelerometer
     list = self.accel.readList(
