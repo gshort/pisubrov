@@ -25,8 +25,8 @@ bsize = 1024
 
 i2clock = threading.Lock()
 bsen = BMP085.BMP085()
-pwm = PWM(0x40)
 lsm = LSM303
+pwm = PWM(0x40)
 
 servoMin = 230  # Min pulse length out of 4096
 servoMid = 445  # For centering cam
@@ -97,7 +97,9 @@ def tstreamer():
     while True:
       try:
         i2clock.acquire()
-        data = 't={0:0.2f}'.format(bsen.read_temperature()) + '&p={0:0.2f}'.format(bsen.read_pressure()) 
+        data = 't={0:0.2f}'.format(bsen.read_temperature())                                   # temperature
+          + '&p={0:0.2f}'.format(bsen.read_pressure())                                        # pressure
+          + '&a={0:0.2f},{0:0.2f},{0:0.2f}&m={0:0.2f},{0:0.2f},{0:0.2f}'.format(lsm.read())   # accelerometer, magnetometer
         i2clock.release()
         t.sendall(datetime.datetime.now().time().isoformat() + ': ' + data)
         time.sleep(0.1)
