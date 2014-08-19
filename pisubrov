@@ -97,11 +97,15 @@ def tstreamer():
     while True:
       try:
         i2clock.acquire()
-        data = 't={0:0.2f}&p={1:0.2f}&a={2:0.2f},{3:0.2f},{4:0.2f}&m={5:0.2f},{6:0.2f},{7:0.2f}'.format(
-          bsen.read_temperature(),
-          bsen.read_pressure(),
-          lsm.read())
+        temp = bsen.read_temperature()
+        pres = bsen.read_pressure()
+        accelmag = lsm.read()
         i2clock.release()
+        data = 't={0:0.2f}&p={1:0.2f}&a={2:0.2f},{3:0.2f},{4:0.2f}&m={5:0.2f},{6:0.2f},{7:0.2f}'.format(
+          temp,
+          pres,
+          accelmag[0], accelmag[1], accelmag[2],
+          accelmag[3], accelmag[4], accelmag[5])
         t.sendall(datetime.datetime.now().time().isoformat() + ': ' + data)
         time.sleep(0.1)
       except :
